@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 
+const admin = require("./firebaseAdmin");
+
 exports.handler = async (event) => {
 
   try {
@@ -8,6 +10,7 @@ exports.handler = async (event) => {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
+      amount,
     } = JSON.parse(event.body);
 
     const sign = crypto
@@ -34,6 +37,17 @@ exports.handler = async (event) => {
       };
 
     }
+
+    await admin
+      .firestore()
+      .collection("donations")
+      .add({
+        amount: Number(amount),
+        paymentId:
+          razorpay_payment_id,
+        createdAt:
+          admin.firestore.FieldValue.serverTimestamp(),
+      });
 
     return {
       statusCode: 200,
