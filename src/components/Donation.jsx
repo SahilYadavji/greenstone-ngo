@@ -4,44 +4,138 @@ import qrImage from "../assets/qr.jpg";
 
 import { useTranslation } from "react-i18next";
 
-import { db } from "../firebase";
-
-import {
-  addDoc,
-  collection,
-} from "firebase/firestore";
 
 export default function Donation() {
 
   const { t } = useTranslation();
 
   const [selectedAmount, setSelectedAmount] = useState(500);
-const saveDonation = async () => {
+  console.log(
+  "Razorpay Key:",
+  import.meta.env
+    .VITE_RAZORPAY_KEY_ID
+);
 
+console.log(
+  "Razorpay Object:",
+  window.Razorpay
+);
+const handleRazorpayPayment = async () => {
+console.log("Razorpay Key:",
+  import.meta.env.VITE_RAZORPAY_KEY_ID);
+
+console.log("Razorpay Object:",
+  window.Razorpay);
   try {
 
-    await addDoc(
-      collection(db, "donations"),
-      {
-        amount: Number(selectedAmount),
-        createdAt: new Date(),
-      }
-    );
+    const orderResponse = await fetch(
+  "/.netlify/functions/createOrder",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      amount: Number(selectedAmount),
+    }),
+  }
+);
 
-    alert("Donation saved successfully!");
+const responseText =
+  await orderResponse.text();
+
+console.log(
+  "Create Order Response:",
+  responseText
+);
+
+const order =
+  JSON.parse(responseText);
+
+    const options = {
+      key:
+        import.meta.env
+          .VITE_RAZORPAY_KEY_ID,
+
+      amount: order.amount,
+
+      currency:
+        order.currency,
+
+      name:
+        "Greenstone NGO",
+
+      description:
+        "Donation",
+
+      order_id: order.id,
+
+      handler:
+        async function (response) {
+
+          const verifyResponse =
+            await fetch(
+              "/.netlify/functions/verifyPayment",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+                },
+
+                body: JSON.stringify(
+                  {
+                    ...response,
+                    amount:
+                      selectedAmount,
+                  }
+                ),
+              }
+            );
+
+          const result =
+            await verifyResponse.json();
+
+          if (
+            result.success
+          ) {
+
+            alert(
+              "Thank you for your donation!"
+            );
+
+          } else {
+
+            alert(
+              "Payment verification failed."
+            );
+
+          }
+
+        },
+    };
+
+    const razorpay =
+      new window.Razorpay(
+        options
+      );
+
+    razorpay.open();
 
   } catch (error) {
 
-    console.error(
-      "Donation Save Error:",
-      error
-    );
+  console.error(
+    "Razorpay Error:",
+    error
+  );
 
-    alert(
-      "Error: " + error.message
-    );
+  alert(
+    "Payment failed: " +
+      error.message
+  );
 
-  }
+}
 
 };
 
@@ -155,7 +249,7 @@ const saveDonation = async () => {
 
           {/* UPI Button */}
           <a
-            onClick={saveDonation}
+          
             href={`upi://pay?pa=9817696408@ptyes&pn=Sahil&am=${selectedAmount}`}
             className="inline-block mt-6 bg-green-700 text-white px-8 py-4 rounded-2xl text-lg hover:bg-green-800 transition"
           >
@@ -163,6 +257,17 @@ const saveDonation = async () => {
             {t("payViaUpi")} ₹{selectedAmount}
 
           </a>
+          <button
+  onClick={
+    handleRazorpayPayment
+  }
+  className="block w-full mt-6 bg-blue-600 text-white px-8 py-4 rounded-2xl text-lg hover:bg-blue-700 transition"
+>
+
+  Donate via Razorpay ₹
+  {selectedAmount}
+
+</button>
 
         </div>
 
