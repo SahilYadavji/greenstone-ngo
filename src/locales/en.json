@@ -1,0 +1,78 @@
+{
+  "home": "Home",
+  "about": "About",
+  "mission": "Mission",
+  "activities": "Activities",
+  "blogs": "Blogs",
+  "contact": "Contact",
+  "donate": "Donate",
+  "events": "Events",
+  "gallery": "Gallery",
+  "joinMission": "Join Mission",
+
+  "heroTitle": "Together We Can Make Earth Better",
+
+  "heroSubtitle": "Join our NGO mission for environment and child welfare.",
+
+  "aboutTitle": "About Us",
+
+  "aboutText": "We work for environmental protection, child welfare and education support.",
+  "eventsTitle": "Upcoming Events",
+  "galleryTitle": "Gallery",
+  "missionTitle": "Our Mission",
+  "plantTitle": "Plant Welfare",
+"plantDesc": "Tree plantation and environment awareness campaigns.",
+
+"childTitle": "Child Support",
+"childDesc": "Helping children with education support.",
+
+"communityTitle": "Community Action",
+"communityDesc": "Improving local communities through social activities.",
+"missionText": "Our mission is to create a greener and better future through social welfare and environmental awareness.",
+"activitiesTitle": "Our Activities",
+
+"treePlantation": "Tree Plantation",
+"treePlantationDesc": "Planting trees for a greener future.",
+
+"educationProgram": "Education Program",
+"educationProgramDesc": "Providing educational support to children.",
+
+"cleanlinessDrive": "Cleanliness Drive",
+"cleanlinessDriveDesc": "Keeping surroundings clean through awareness campaigns.",
+"donationTitle": "Support Our Mission",
+"donationText": "Your contribution helps us support environmental and social welfare activities.",
+"enterAmount": "Enter Custom Amount",
+"scanAndPay": "Scan & Pay",
+"upiId": "UPI ID",
+"selectedAmount": "Selected Amount:",
+"payViaUpi": "Pay via UPI",
+"volunteerTitle": "Volunteer Registration",
+"fullName": "Full Name",
+"email": "Email",
+"phone": "Phone Number",
+"whyJoin": "Why do you want to join?",
+"registerNow": "Register Now",
+"volunteerSuccess": "Volunteer Registration Successful!",
+"contactTitle": "Contact Us",
+"location": "Location",
+"successStories": "Success Stories",
+"latestBlogs": "Latest NGO Blogs",
+"chatTitle": "NGO Assistant",
+"clear": "Clear",
+"typeMessage": "Type message...",
+"send": "Send",
+
+"chatWelcome": "Hello 👋 Welcome to Greenstone NGO. How can I help you?",
+
+"defaultReply": "Please contact our NGO team.",
+
+"volunteerReply": "You can register in the Volunteer section.",
+
+"donateReply": "You can donate using our UPI QR in Donation section.",
+
+"eventReply": "Check our Events section for upcoming NGO activities.",
+
+"contactReply": "You can contact us through Contact section.",
+
+"helloReply": "Hello 👋 How can I help you today?"
+}
