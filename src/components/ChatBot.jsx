@@ -50,12 +50,21 @@ useEffect(() => {
 // Auto Scroll
 useEffect(() => {
 
-  if (messagesContainerRef.current) {
+  const timer = setTimeout(() => {
 
-    messagesContainerRef.current.scrollTop =
-      messagesContainerRef.current.scrollHeight;
+    if (messagesContainerRef.current) {
 
-  }
+      messagesContainerRef.current.scrollTo({
+        top:
+          messagesContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+
+    }
+
+  }, 100);
+
+  return () => clearTimeout(timer);
 
 }, [messages]);
 
@@ -133,19 +142,46 @@ useEffect(() => {
           "Sorry, I couldn't answer that.",
       },
     ]);
+    setTimeout(() => {
+
+  if (messagesContainerRef.current) {
+
+    messagesContainerRef.current.scrollTo({
+      top:
+        messagesContainerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+
+  }
+
+}, 200);
 
   } catch (error) {
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        sender: "bot",
-        text:
-          "Sorry, something went wrong.",
-      },
-    ]);
+  setMessages((prev) => [
+    ...prev,
+    {
+      sender: "bot",
+      text:
+        "Sorry, something went wrong.",
+    },
+  ]);
 
-  }
+  setTimeout(() => {
+
+    if (messagesContainerRef.current) {
+
+      messagesContainerRef.current.scrollTo({
+        top:
+          messagesContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+
+    }
+
+  }, 200);
+
+}
 
 };
 
@@ -195,11 +231,10 @@ useEffect(() => {
           </div>
 
           {/* Messages */}
-      <div
+     <div
   ref={messagesContainerRef}
   className="h-96 overflow-y-auto p-4 space-y-4 bg-gray-50 scroll-smooth"
 >
-
   {messages.map((msg, index) => (
 
     <div
