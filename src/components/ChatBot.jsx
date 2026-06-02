@@ -13,46 +13,51 @@ export default function ChatBot() {
   const [input, setInput] = useState("");
 
   const chatRef = useRef();
-  const messagesEndRef = useRef(null);
+const messagesContainerRef = useRef(null);
 
-  // Close Chat on Outside Click
-  useEffect(() => {
+// Close Chat on Outside Click
+useEffect(() => {
 
-    const handleClickOutside = (event) => {
+  const handleClickOutside = (event) => {
 
-      if (
-        chatRef.current &&
-        !chatRef.current.contains(event.target)
-      ) {
+    if (
+      chatRef.current &&
+      !chatRef.current.contains(event.target)
+    ) {
 
-        setOpen(false);
+      setOpen(false);
 
-      }
+    }
 
-    };
-    useEffect(() => {
+  };
 
-  messagesEndRef.current?.scrollIntoView({
-    behavior: "smooth",
-  });
+  document.addEventListener(
+    "mousedown",
+    handleClickOutside
+  );
 
-}, [messages]);
+  return () => {
 
-    document.addEventListener(
+    document.removeEventListener(
       "mousedown",
       handleClickOutside
     );
 
-    return () => {
+  };
 
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+}, []);
 
-    };
+// Auto Scroll
+useEffect(() => {
 
-  }, []);
+  if (messagesContainerRef.current) {
+
+    messagesContainerRef.current.scrollTop =
+      messagesContainerRef.current.scrollHeight;
+
+  }
+
+}, [messages]);
 
   // Update Welcome Message on Language Change
   useEffect(() => {
@@ -190,7 +195,10 @@ export default function ChatBot() {
           </div>
 
           {/* Messages */}
-          <div className="h-96 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div
+  ref={messagesContainerRef}
+  className="h-96 overflow-y-auto p-4 space-y-4 bg-gray-50 scroll-smooth"
+>
 
   {messages.map((msg, index) => (
 
@@ -210,14 +218,11 @@ export default function ChatBot() {
 
   ))}
 
-  <div ref={messagesEndRef}></div>
-
-</div>
-
+  
           </div>
 
-          {/* Input */}
-          <div className="flex p-3 border-t">
+{/* Input */}
+<div className="flex p-3 border-t">
 
             <input
   type="text"
