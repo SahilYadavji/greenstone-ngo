@@ -70,71 +70,71 @@ export default function ChatBot() {
 
   };
 
-  // Send Message
-  const sendMessage = () => {
+ const sendMessage = async () => {
 
-    if (!input.trim()) return;
+  if (!input.trim()) return;
 
-    const userMessage = {
-      sender: "user",
-      text: input,
-    };
+  const userMessage = {
+    sender: "user",
+    text: input,
+  };
 
-    let botReply = t("defaultReply");
+  setMessages((prev) => [
+    ...prev,
+    userMessage,
+  ]);
 
-    const text = input.toLowerCase();
+  const currentInput = input;
 
-    if (
-      text.includes("volunteer") ||
-      text.includes("वॉलंटियर")
-    ) {
+  setInput("");
 
-      botReply = t("volunteerReply");
+  try {
 
-    } else if (
-      text.includes("donate") ||
-      text.includes("दान")
-    ) {
+    const response =
+      await fetch(
+        "/.netlify/functions/chat",
+        {
+          method: "POST",
 
-      botReply = t("donateReply");
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-    } else if (
-      text.includes("event") ||
-      text.includes("कार्यक्रम")
-    ) {
+          body: JSON.stringify({
+            message:
+              currentInput,
+          }),
+        }
+      );
 
-      botReply = t("eventReply");
+    const data =
+      await response.json();
 
-    } else if (
-      text.includes("contact") ||
-      text.includes("संपर्क")
-    ) {
-
-      botReply = t("contactReply");
-
-    } else if (
-      text.includes("hello") ||
-      text.includes("hi") ||
-      text.includes("नमस्ते")
-    ) {
-
-      botReply = t("helloReply");
-
-    }
-
-    const botMessage = {
-      sender: "bot",
-      text: botReply,
-    };
-
-    setMessages([
-      ...messages,
-      userMessage,
-      botMessage,
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text:
+          data.reply ||
+          "Sorry, I couldn't answer that.",
+      },
     ]);
 
-    setInput("");
-  };
+  } catch (error) {
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text:
+          "Sorry, something went wrong.",
+      },
+    ]);
+
+  }
+
+};
 
   return (
 
@@ -209,12 +209,17 @@ export default function ChatBot() {
           <div className="flex p-3 border-t">
 
             <input
-              type="text"
-              placeholder={t("typeMessage")}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-1 border rounded-2xl px-4 py-2 outline-none"
-            />
+  type="text"
+  placeholder={t("typeMessage")}
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  }}
+  className="flex-1 border rounded-2xl px-4 py-2 outline-none"
+/>
 
             <button
               onClick={sendMessage}
