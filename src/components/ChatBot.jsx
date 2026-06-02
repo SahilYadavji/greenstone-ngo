@@ -13,6 +13,7 @@ export default function ChatBot() {
   const [input, setInput] = useState("");
 
   const chatRef = useRef();
+  const messagesEndRef = useRef(null);
 
   // Close Chat on Outside Click
   useEffect(() => {
@@ -29,6 +30,13 @@ export default function ChatBot() {
       }
 
     };
+    useEffect(() => {
+
+  messagesEndRef.current?.scrollIntoView({
+    behavior: "smooth",
+  });
+
+}, [messages]);
 
     document.addEventListener(
       "mousedown",
@@ -184,24 +192,27 @@ export default function ChatBot() {
           {/* Messages */}
           <div className="h-96 overflow-y-auto p-4 space-y-4 bg-gray-50">
 
-            {messages.map((msg, index) => (
+  {messages.map((msg, index) => (
 
-              <div
-                key={index}
-                className={`p-3 rounded-2xl max-w-[80%]
-                
-                ${
-                  msg.sender === "user"
-                    ? "bg-green-700 text-white ml-auto"
-                    : "bg-gray-200 text-black"
-                }`}
-              >
+    <div
+      key={index}
+      className={`p-3 rounded-2xl max-w-[80%]
+      ${
+        msg.sender === "user"
+          ? "bg-green-700 text-white ml-auto"
+          : "bg-gray-200 text-black"
+      }`}
+    >
 
-                {msg.text}
+      {msg.text}
 
-              </div>
+    </div>
 
-            ))}
+  ))}
+
+  <div ref={messagesEndRef}></div>
+
+</div>
 
           </div>
 
