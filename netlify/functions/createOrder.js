@@ -1,7 +1,6 @@
 const Razorpay = require("razorpay");
 
 exports.handler = async (event) => {
-
   try {
 
     console.log("EVENT BODY:", event.body);
@@ -25,13 +24,11 @@ exports.handler = async (event) => {
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    const order =
-      await razorpay.orders.create({
-        amount: amount * 100,
-        currency: "INR",
-        receipt:
-          `receipt_${Date.now()}`,
-      });
+    const order = await razorpay.orders.create({
+      amount: amount * 100,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    });
 
     return {
       statusCode: 200,
@@ -54,5 +51,4 @@ exports.handler = async (event) => {
     };
 
   }
-
 };
