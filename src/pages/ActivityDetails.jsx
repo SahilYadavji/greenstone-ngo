@@ -82,7 +82,11 @@ const registerVolunteer = async (e) => {
       }
     );
 
-    alert("Registration Successful");
+    alert(
+  i18n.language === "hi"
+    ? "पंजीकरण सफल रहा"
+    : "Registration Successful"
+);
 
     setFormData({
       name: "",
@@ -94,7 +98,11 @@ const registerVolunteer = async (e) => {
 
     console.error(error);
 
-    alert("Registration Failed");
+   alert(
+  i18n.language === "hi"
+    ? "पंजीकरण विफल रहा"
+    : "Registration Failed"
+);
 
   }
 
@@ -129,10 +137,10 @@ const registerVolunteer = async (e) => {
       <div className="min-h-screen flex items-center justify-center">
 
         <h1 className="text-3xl font-bold">
-
-          Loading...
-
-        </h1>
+  {i18n.language === "hi"
+    ? "लोड हो रहा है..."
+    : "Loading..."}
+</h1>
 
       </div>
 
@@ -296,54 +304,64 @@ const registerVolunteer = async (e) => {
 >
 
   <h2 className="text-3xl font-bold text-green-700 mb-6">
-
-    Register For This Activity
-
-  </h2>
+  {i18n.language === "hi"
+    ? "इस गतिविधि के लिए पंजीकरण करें"
+    : "Register For This Activity"}
+</h2>
 
   <form
     onSubmit={registerVolunteer}
     className="space-y-4"
   >
 
-    <input
-      type="text"
-      name="name"
-      placeholder="Full Name"
-      value={formData.name}
-      onChange={handleChange}
-      className="w-full border p-3 rounded-xl"
-      required
-    />
+   <input
+  type="text"
+  name="name"
+  placeholder={
+    i18n.language === "hi"
+      ? "पूरा नाम"
+      : "Full Name"
+  }
+  value={formData.name}
+  onChange={handleChange}
+  className="w-full border p-3 rounded-xl"
+  required
+/>
+   <input
+  type="email"
+  name="email"
+  placeholder={
+    i18n.language === "hi"
+      ? "ईमेल"
+      : "Email"
+  }
+  value={formData.email}
+  onChange={handleChange}
+  className="w-full border p-3 rounded-xl"
+  required
+/>
 
     <input
-      type="email"
-      name="email"
-      placeholder="Email"
-      value={formData.email}
-      onChange={handleChange}
-      className="w-full border p-3 rounded-xl"
-      required
-    />
-
-    <input
-      type="text"
-      name="phone"
-      placeholder="Phone Number"
-      value={formData.phone}
-      onChange={handleChange}
-      className="w-full border p-3 rounded-xl"
-      required
-    />
-
+  type="text"
+  name="phone"
+  placeholder={
+    i18n.language === "hi"
+      ? "फोन नंबर"
+      : "Phone Number"
+  }
+  value={formData.phone}
+  onChange={handleChange}
+  className="w-full border p-3 rounded-xl"
+  required
+/>
     <button
-      type="submit"
-      className="bg-green-700 text-white px-8 py-3 rounded-xl"
-    >
-
-      Register
-
-    </button>
+  type="submit"
+  className="bg-green-700 text-white px-8 py-3 rounded-xl"
+>
+  {i18n.language === "hi"
+    ? "पंजीकरण करें"
+    : "Register"}
+</button>
 
   </form>
 
