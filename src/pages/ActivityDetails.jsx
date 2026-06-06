@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { useParams, Link } from "react-router-dom";
+import {
+  useParams,
+  Link,
+  useLocation,
+} from "react-router-dom";
 
 import { db } from "../firebase";
 
 import {
   doc,
   getDoc,
+  addDoc,
+  collection,
 } from "firebase/firestore";
 
 import { useTranslation } from "react-i18next";
@@ -14,10 +20,15 @@ import { useTranslation } from "react-i18next";
 export default function ActivityDetails() {
 
   const { id } = useParams();
-
+  const location = useLocation();
   const { i18n } = useTranslation();
 
   const [activity, setActivity] = useState(null);
+  const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  phone: "",
+});
 
   const fetchActivity = async () => {
 
@@ -41,13 +52,76 @@ export default function ActivityDetails() {
     }
 
   };
+  const handleChange = (e) => {
+
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+
+};
+
+const registerVolunteer = async (e) => {
+
+  e.preventDefault();
+
+  try {
+
+    await addDoc(
+      collection(db, "activityRegistrations"),
+      {
+        activityId: activity.id,
+        activityTitle: activity.title,
+        activityTitleHindi: activity.titleHindi,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+
+        status: "pending",
+        createdAt: new Date(),
+      }
+    );
+
+    alert("Registration Successful");
+
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Registration Failed");
+
+  }
+
+};
 
   useEffect(() => {
 
     fetchActivity();
 
   }, [id]);
+  useEffect(() => {
 
+  if (location.hash === "#activity-registration") {
+
+    setTimeout(() => {
+
+      document
+        .getElementById("activity-registration")
+        ?.scrollIntoView({
+          behavior: "smooth",
+        });
+
+    }, 500);
+
+  }
+
+}, [location]);
   if (!activity) {
 
     return (
@@ -202,16 +276,6 @@ export default function ActivityDetails() {
           {/* CTA */}
           <div className="text-center">
 
-            <a
-              href="/#volunteer"
-              className="inline-block bg-green-700 text-white px-8 py-4 rounded-2xl mr-4 hover:bg-green-800 transition"
-            >
-
-              {i18n.language === "hi"
-                ? "वॉलंटियर बनें"
-                : "Become a Volunteer"}
-
-            </a>
 
             <Link
               to="/"
@@ -225,6 +289,65 @@ export default function ActivityDetails() {
             </Link>
 
           </div>
+          {/* Activity Registration Form */}
+<div
+  id="activity-registration"
+  className="mt-16 bg-green-50 p-8 rounded-3xl"
+>
+
+  <h2 className="text-3xl font-bold text-green-700 mb-6">
+
+    Register For This Activity
+
+  </h2>
+
+  <form
+    onSubmit={registerVolunteer}
+    className="space-y-4"
+  >
+
+    <input
+      type="text"
+      name="name"
+      placeholder="Full Name"
+      value={formData.name}
+      onChange={handleChange}
+      className="w-full border p-3 rounded-xl"
+      required
+    />
+
+    <input
+      type="email"
+      name="email"
+      placeholder="Email"
+      value={formData.email}
+      onChange={handleChange}
+      className="w-full border p-3 rounded-xl"
+      required
+    />
+
+    <input
+      type="text"
+      name="phone"
+      placeholder="Phone Number"
+      value={formData.phone}
+      onChange={handleChange}
+      className="w-full border p-3 rounded-xl"
+      required
+    />
+
+    <button
+      type="submit"
+      className="bg-green-700 text-white px-8 py-3 rounded-xl"
+    >
+
+      Register
+
+    </button>
+
+  </form>
+
+</div>
 
         </div>
 

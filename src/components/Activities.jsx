@@ -54,46 +54,55 @@ export default function Activities() {
 
         <div className="grid md:grid-cols-3 gap-8">
 
-          {activities.map((item) => (
+        {activities.map((item) => (
 
-            <Link
-              key={item.id}
-              to={`/activity/${item.id}`}
-            >
+  <div
+    key={item.id}
+    className="bg-white p-10 rounded-3xl shadow-lg text-center hover:scale-105 transition"
+  >
 
-              <div className="bg-white p-10 rounded-3xl shadow-lg text-center hover:scale-105 transition cursor-pointer">
+    <img
+      src={item.image}
+      alt={item.title}
+      onError={(e) => {
+        e.target.src = "https://picsum.photos/800/500";
+      }}
+      className="h-48 w-full object-cover rounded-2xl mb-4"
+    />
 
-        <img
-  src={item.image}
-  alt={item.title}
-  onError={(e) => {
-    e.target.src =
-      "https://picsum.photos/800/500";
-  }}
-  className="h-48 w-full object-cover rounded-2xl mb-4"
-/>
+    <h3 className="text-2xl font-semibold mb-4">
+      {i18n.language === "hi"
+        ? item.titleHindi
+        : item.title}
+    </h3>
 
-                <h3 className="text-2xl font-semibold mb-4">
+    <p className="text-gray-600 mb-6">
+      {i18n.language === "hi"
+        ? item.descriptionHindi
+        : item.description}
+    </p>
 
-                  {i18n.language === "hi"
-                    ? item.titleHindi
-                    : item.title}
+    <div className="flex gap-3 justify-center">
 
-                </h3>
+      <Link
+        to={`/activity/${item.id}`}
+        className="bg-gray-700 text-white px-4 py-2 rounded-xl"
+      >
+        View Details
+      </Link>
 
-                <p className="text-gray-600">
+      <Link
+        to={`/activity/${item.id}#activity-registration`}
+        className="bg-green-700 text-white px-4 py-2 rounded-xl"
+      >
+        Become Volunteer
+      </Link>
 
-                  {i18n.language === "hi"
-                    ? item.descriptionHindi
-                    : item.description}
+    </div>
 
-                </p>
+  </div>
 
-              </div>
-
-            </Link>
-
-          ))}
+))}
 
         </div>
 

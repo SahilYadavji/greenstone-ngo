@@ -13,7 +13,7 @@ import Analytics from "./Analytics";
 import SuccessManager from "./SuccessManager";
 
 import BlogManager from "./BlogManager";
-
+import ActivityVolunteerManager from "./ActivityVolunteerManager";
 import jsPDF from "jspdf";
 import ActivityManager from "./ActivityManager";
 import {
@@ -369,7 +369,7 @@ export default function Admin() {
 
       {/* Managers */}
       <ActivityManager />
-
+      <ActivityVolunteerManager />
       <EventManager />
       
 
