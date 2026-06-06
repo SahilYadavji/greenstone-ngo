@@ -84,19 +84,19 @@ export default function Activities() {
 
     <div className="flex gap-3 justify-center">
 
-      <Link
-        to={`/activity/${item.id}`}
-        className="bg-gray-700 text-white px-4 py-2 rounded-xl"
-      >
-        View Details
-      </Link>
+     <Link
+  to={`/activity/${item.id}`}
+  className="bg-gray-700 text-white px-4 py-2 rounded-xl"
+>
+  {t("viewDetails")}
+</Link>
 
-      <Link
-        to={`/activity/${item.id}#activity-registration`}
-        className="bg-green-700 text-white px-4 py-2 rounded-xl"
-      >
-        Become Volunteer
-      </Link>
+<Link
+  to={`/activity/${item.id}#activity-registration`}
+  className="bg-green-700 text-white px-4 py-2 rounded-xl"
+>
+  {t("becomeVolunteer")}
+</Link>
 
     </div>
 
