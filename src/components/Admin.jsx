@@ -5,7 +5,7 @@ import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
 import { useEffect, useState } from "react";
-
+import DonationManager from "./DonationManager";
 import EventManager from "./EventManager";
 
 import Analytics from "./Analytics";
@@ -187,7 +187,9 @@ export default function Admin() {
 
     querySnapshot.forEach((docItem) => {
 
-      total += Number(docItem.data().amount || 0);
+      if (docItem.data().status === "Approved") {
+        total += Number(docItem.data().amount || 0);
+      }
 
     });
 
@@ -376,6 +378,7 @@ export default function Admin() {
       <BlogManager />
 
       <SuccessManager />
+      <DonationManager />
 
       {/* Search & Filter */}
       <div className="bg-white p-6 rounded-3xl shadow-xl mt-10 mb-10">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 
 import ReactDOM from 'react-dom/client';
 
@@ -13,12 +13,11 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "./firebase";
 
-import { useEffect, useState } from "react";
-
 import App from './App';
 import ActivityDetails from "./pages/ActivityDetails";
 
-import Admin from './components/Admin';
+// Lazy load Admin to reduce initial bundle
+const Admin = lazy(() => import('./components/Admin'));
 
 import Login from './components/Login';
 
@@ -49,7 +48,7 @@ function ProtectedRoute({ children }) {
 
   }, []);
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) return null;
 
   return user ? children : <Navigate to="/login" />;
 }
@@ -73,7 +72,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           path="/admin"
           element={
             <ProtectedRoute>
-              <Admin />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Admin />
+              </Suspense>
             </ProtectedRoute>
           }
         />

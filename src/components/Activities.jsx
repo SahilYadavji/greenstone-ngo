@@ -64,6 +64,8 @@ export default function Activities() {
     <img
       src={item.image}
       alt={item.title}
+      width={800}
+      height={500}
       onError={(e) => {
         e.target.src = "https://picsum.photos/800/500";
       }}

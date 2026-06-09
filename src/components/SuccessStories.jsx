@@ -105,6 +105,8 @@ export default function SuccessStories() {
             <img
               src={item.image}
               alt={item.translatedTitle}
+              width={600}
+              height={480}
               className="h-64 w-full object-cover"
             />
 

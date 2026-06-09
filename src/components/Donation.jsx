@@ -1,143 +1,83 @@
 import { useState } from "react";
+import { storage } from "../firebase";
 
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 import qrImage from "../assets/qr.jpg";
 
 import { useTranslation } from "react-i18next";
 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+import { db } from "../firebase";
 
 export default function Donation() {
 
   const { t } = useTranslation();
 
   const [selectedAmount, setSelectedAmount] = useState(500);
-  console.log(
-  "Razorpay Key:",
-  import.meta.env
-    .VITE_RAZORPAY_KEY_ID
-);
 
-console.log(
-  "Razorpay Object:",
-  window.Razorpay
-);
-const handleRazorpayPayment = async () => {
-console.log("Razorpay Key:",
-  import.meta.env.VITE_RAZORPAY_KEY_ID);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [utrNumber, setUtrNumber] = useState("");
 
-console.log("Razorpay Object:",
-  window.Razorpay);
-  try {
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const orderResponse = await fetch(
-  "/.netlify/functions/createOrder",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      amount: Number(selectedAmount),
-    }),
-  }
-);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [screenshot, setScreenshot] = useState(null);
 
-const responseText =
-  await orderResponse.text();
+  const handleConfirmPayment = async () => {
 
-console.log(
-  "Create Order Response:",
-  responseText
-);
+    if (!utrNumber) {
+      setStatusMessage("Please enter UTR number.");
+      return;
+    }
 
-const order =
-  JSON.parse(responseText);
+    if (!screenshot) {
+      setStatusMessage("Please upload payment screenshot.");
+      return;
+    }
 
-    const options = {
-      key:
-        import.meta.env
-          .VITE_RAZORPAY_KEY_ID,
+    setIsSubmitting(true);
 
-      amount: order.amount,
-
-      currency:
-        order.currency,
-
-      name:
-        "Greenstone NGO",
-
-      description:
-        "Donation",
-
-      order_id: order.id,
-
-      handler:
-        async function (response) {
-
-          const verifyResponse =
-            await fetch(
-              "/.netlify/functions/verifyPayment",
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body: JSON.stringify(
-                  {
-                    ...response,
-                    amount:
-                      selectedAmount,
-                  }
-                ),
-              }
-            );
-
-          const result =
-            await verifyResponse.json();
-
-          if (
-            result.success
-          ) {
-
-            alert(
-              "Thank you for your donation!"
-            );
-
-          } else {
-
-            alert(
-              "Payment verification failed."
-            );
-
-          }
-
-        },
-    };
-
-    const razorpay =
-      new window.Razorpay(
-        options
+    try {
+      const storageRef = ref(
+        storage,
+        `donationScreenshots/${Date.now()}_${screenshot.name}`
       );
 
-    razorpay.open();
+      await uploadBytes(storageRef, screenshot);
 
-  } catch (error) {
+      const screenshotUrl = await getDownloadURL(storageRef);
 
-  console.error(
-    "Razorpay Error:",
-    error
-  );
+      await addDoc(collection(db, "donations"), {
+        amount: Number(selectedAmount),
+        utrNumber,
+        paymentMethod: "UPI",
+        screenshotUrl,
+        status: "Pending",
+        createdAt: serverTimestamp(),
+      });
 
-  alert(
-    "Payment failed: " +
-      error.message
-  );
+      setStatusMessage(
+        "Donation submitted successfully. Waiting for admin approval."
+      );
 
-}
+      setUtrNumber("");
+      setScreenshot(null);
+      setShowPaymentOptions(false);
+      setShowQR(false);
 
-};
+    } catch (error) {
+      console.error(error);
+      setStatusMessage("Failed to submit donation.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
 
@@ -169,14 +109,18 @@ const order =
 
             <button
               key={amount}
-              onClick={() => setSelectedAmount(amount)}
+              onClick={() => {
+                setSelectedAmount(amount);
+                setShowPaymentOptions(false);
+                setShowQR(false);
+                setStatusMessage("");
+              }}
               className={`p-8 rounded-3xl shadow-xl transition hover:scale-105
 
-              ${
-                selectedAmount === amount
+              ${selectedAmount === amount
                   ? "bg-green-700 text-white"
                   : "bg-white text-green-700"
-              }`}
+                }`}
             >
 
               <h3 className="text-3xl font-bold">
@@ -190,7 +134,6 @@ const order =
           ))}
 
         </div>
-
         {/* Custom Amount */}
         <div className="max-w-md mx-auto mb-12">
 
@@ -198,39 +141,86 @@ const order =
             type="number"
             placeholder={t("enterAmount")}
             value={selectedAmount}
-            onChange={(e) =>
-              setSelectedAmount(
-                e.target.value
-              )
-            }
+            onChange={(e) => {
+              setSelectedAmount(e.target.value);
+              setShowPaymentOptions(false);
+              setShowQR(false);
+              setStatusMessage("");
+            }}
             className="w-full border p-5 rounded-2xl text-center text-2xl shadow-lg"
           />
 
         </div>
 
-        {/* QR Section */}
-        <div className="bg-white p-10 rounded-3xl shadow-2xl max-w-md mx-auto">
+        <button
+          onClick={() => {
+            setShowPaymentOptions(true);
+          }}
+          className="bg-green-600 text-white px-10 py-4 rounded-2xl text-xl hover:bg-green-700"
+        >
+          Pay ₹{selectedAmount}
+        </button>
 
-          <h3 className="text-3xl font-bold text-green-700 mb-6">
+        {showPaymentOptions && (
+          <div className="mt-8 rounded-3xl border border-green-200 bg-white p-6 text-left shadow-lg max-w-md mx-auto">
+            <h4 className="text-2xl font-bold text-green-800 mb-4">
+              Complete Donation
+            </h4>
 
-          Support Greenstone NGO  {selectedAmount}
+            <button
+              onClick={() => setShowQR(!showQR)}
+              className="w-full bg-green-600 text-white py-3 rounded-xl mb-4"
+            >
+              Show QR
+            </button>
 
-          </h3>
+            {showQR && (
+              <div className="mb-4">
+                <img
+                  src={qrImage}
+                  alt="Donation QR code"
+                  className="mx-auto w-72 h-72 object-contain"
+                />
+              </div>
+            )}
 
-          
-          <button
-  onClick={
-    handleRazorpayPayment
-  }
-  className="block w-full mt-6 bg-blue-600 text-white px-8 py-4 rounded-2xl text-lg hover:bg-blue-700 transition"
->
+            <input
+              type="text"
+              placeholder="UTR Number"
+              value={utrNumber}
+              onChange={(e) => setUtrNumber(e.target.value)}
+              className="w-full border p-3 rounded-xl mb-4"
+            />
 
-  Donate Now ₹{selectedAmount}  
-  
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setScreenshot(e.target.files[0])}
+              className="w-full border p-3 rounded-xl mb-4"
+            />
 
-</button>
+            <button
+              onClick={handleConfirmPayment}
+              disabled={isSubmitting}
+              className="w-full bg-blue-600 text-white py-4 rounded-2xl text-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Donation"}
+            </button>
 
-        </div>
+            <button
+              onClick={() => setShowPaymentOptions(false)}
+              className="w-full mt-3 bg-gray-200 py-3 rounded-xl"
+            >
+              Close
+            </button>
+          </div>
+        )}
+
+        {statusMessage && (
+          <p className="mt-4 text-sm text-center text-green-700">
+            {statusMessage}
+          </p>
+        )}
 
       </div>
 
